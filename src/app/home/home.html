@@ -1,0 +1,241 @@
+<!-- Navbar -->
+<header class="bg-white/90 backdrop-blur border-b border-gray-100 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="assets/logo.svg" alt="Logo" class="h-8 w-8">
+      <span class="text-lg font-semibold text-gray-800">Mi Plataforma</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+      <a href="#servicios" class="hover:text-indigo-600 transition">Servicios</a>
+      <a href="#taller" class="hover:text-indigo-600 transition">Taller</a>
+      <a href="#calidad" class="hover:text-indigo-600 transition">Calidad</a>
+      <a href="#noticias" class="hover:text-indigo-600 transition">Noticias</a>
+      <a href="#articulos" class="hover:text-indigo-600 transition">Artículos</a>
+    </nav>
+    <div class="hidden md:flex items-center gap-3">
+      <a routerLink="/login" class="text-sm text-gray-600 hover:text-indigo-600">Ingresar</a>
+      <a routerLink="/registro"
+         class="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Regístrate</a>
+    </div>
+    <button class="md:hidden p-2 rounded hover:bg-gray-100" aria-label="Abrir menú">
+      <svg class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- Hero / Banner -->
+<section class="relative">
+  <img src="assets/hero.jpg" alt="Banner" class="w-full h-[42vh] md:h-[60vh] object-cover">
+  <div class="absolute inset-0 bg-black/40"></div>
+  <div class="absolute inset-0 flex items-center">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 text-white">
+      <h1 class="text-3xl md:text-5xl font-bold max-w-3xl">Comprometidos con el aprendizaje y la vida saludable</h1>
+      <p class="mt-3 md:mt-4 text-base md:text-lg max-w-2xl">
+        Cursos interactivos, comunidad activa y certificaciones para impulsar tu crecimiento.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="#servicios" class="bg-white text-gray-900 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 transition">Conoce nuestros servicios</a>
+        <a routerLink="/catalogo" class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition">Ver catálogo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Servicios -->
+<section id="servicios" class="py-14 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+    <div class="flex items-end justify-between gap-6">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Nuestros servicios</h2>
+        <p class="mt-2 text-gray-600">Formación online, soporte docente y experiencias prácticas.</p>
+      </div>
+      <a routerLink="/servicios" class="hidden md:inline text-indigo-600 hover:text-indigo-700 font-medium">Ver todos</a>
+    </div>
+
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (s of servicios; track $index) {
+      <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6">
+        <div class="h-12 w-12 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl">
+          {{ s.icon }}
+        </div>
+        <h3 class="mt-4 text-lg font-semibold text-gray-900">{{ s.title }}</h3>
+        <p class="mt-1 text-sm text-gray-600">{{ s.desc }}</p>
+        <a [routerLink]="s.link" class="mt-4 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700">
+          Más info
+          <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>}
+    </div>
+  </div>
+</section>
+
+<!-- Taller destacado -->
+<section id="taller" class="py-14">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 grid gap-8 md:grid-cols-2 items-center">
+    <div class="relative rounded-2xl overflow-hidden">
+      <img src="assets/taller.jpg" alt="Taller Mamá y Bebé" class="w-full h-72 md:h-[26rem] object-cover">
+      <div class="absolute inset-0 bg-gradient-to-tr from-indigo-700/40 to-pink-500/30"></div>
+    </div>
+    <div>
+      <span class="text-sm font-semibold tracking-wide text-indigo-600">Taller destacado</span>
+      <h3 class="mt-2 text-2xl md:text-3xl font-bold text-gray-900">Taller Mamá y Bebé</h3>
+      <p class="mt-3 text-gray-600">
+        Acompañamiento por especialistas, módulos prácticos y comunidad de apoyo. Inscríbete y aprende con confianza.
+      </p>
+      <ul class="mt-4 space-y-2 text-gray-700">
+        <li class="flex items-start gap-2">
+          <span class="text-indigo-600">•</span>
+          <span>Sesiones en vivo y grabadas</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-indigo-600">•</span>
+          <span>Material descargable y evaluaciones</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-indigo-600">•</span>
+          <span>Certificado de participación</span>
+        </li>
+      </ul>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a routerLink="/taller/mama-bebe" class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition">Inscribirme</a>
+        <a routerLink="/talleres" class="text-indigo-600 font-medium hover:text-indigo-700">Ver más talleres</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Calidad / Certificaciones -->
+<section id="calidad" class="py-14 bg-white">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+    <div class="text-center">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Compromiso con la calidad</h2>
+      <p class="mt-2 text-gray-600">Estándares y reconocimientos que respaldan nuestra formación.</p>
+    </div>
+
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (c of certificaciones; track $index) {
+      <div class="p-6 border border-gray-100 rounded-xl hover:shadow-md transition">
+        <div class="flex items-center gap-3">
+          <div class="h-11 w-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+            {{ c.icon }}
+          </div>
+          <div>
+            <p class="font-semibold text-gray-900">{{ c.title }}</p>
+            <p class="text-sm text-gray-600">{{ c.subtitle }}</p>
+          </div>
+        </div>
+        <p class="mt-3 text-sm text-gray-600">{{ c.desc }}</p>
+      </div>}
+    </div>
+  </div>
+</section>
+
+<!-- Noticias -->
+<section id="noticias" class="py-14 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+    <div class="flex items-end justify-between">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Noticias</h2>
+        <p class="mt-2 text-gray-600">Lo más reciente de nuestra comunidad.</p>
+      </div>
+      <a routerLink="/noticias" class="hidden md:inline text-indigo-600 hover:text-indigo-700 font-medium">Ver todas</a>
+    </div>
+
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        @for (n of noticias; track $index) {
+      <article class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition">
+        <img [src]="n.img" [alt]="n.title" class="w-full h-44 object-cover">
+        <div class="p-5">
+          <span class="text-xs font-medium text-indigo-600 uppercase">{{ n.tag }}</span>
+          <h3 class="mt-2 text-lg font-semibold text-gray-900">{{ n.title }}</h3>
+          <p class="mt-1 text-sm text-gray-600 line-clamp-3">{{ n.desc }}</p>
+          <a [routerLink]="n.link" class="mt-4 inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-700">
+            Leer más
+            <svg class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </article>}
+    </div>
+  </div>
+</section>
+
+<!-- Artículos de interés -->
+<section id="articulos" class="py-14">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+    <div class="text-center">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Artículos de interés</h2>
+      <p class="mt-2 text-gray-600">Consejos, guías y buenas prácticas para tu bienestar y aprendizaje.</p>
+    </div>
+
+    <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        @for (a of articulos; track $index) {
+      <article class="p-6 border border-gray-100 rounded-xl hover:shadow-md transition">
+        <div class="flex items-center gap-3">
+          <img [src]="a.avatar" alt="" class="h-10 w-10 rounded-full object-cover">
+          <div>
+            <p class="text-sm text-gray-700">{{ a.author }}</p>
+            <p class="text-xs text-gray-500">{{ a.date }}</p>
+          </div>
+        </div>
+        <h3 class="mt-3 text-lg font-semibold text-gray-900">{{ a.title }}</h3>
+        <p class="mt-1 text-sm text-gray-600 line-clamp-3">{{ a.desc }}</p>
+        <a [routerLink]="a.link" class="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700">Leer artículo</a>
+      </article>}
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-950 text-gray-300">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <div class="flex items-center gap-3">
+        <img src="assets/logo.svg" alt="Logo" class="h-8 w-8">
+        <span class="text-lg font-semibold text-white">Mi Plataforma</span>
+      </div>
+      <p class="mt-3 text-sm text-gray-400">Formación de calidad con enfoque humano y tecnológico.</p>
+      <div class="mt-4 flex gap-3">
+        <a href="#" class="p-2 rounded bg-white/10 hover:bg-white/15"><span class="sr-only">Facebook</span>🌐</a>
+        <a href="#" class="p-2 rounded bg-white/10 hover:bg-white/15"><span class="sr-only">Instagram</span>📷</a>
+        <a href="#" class="p-2 rounded bg-white/10 hover:bg-white/15"><span class="sr-only">YouTube</span>▶️</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="text-sm font-semibold text-white">Compañía</h4>
+      <ul class="mt-3 space-y-2 text-sm">
+        <li><a routerLink="/sobre" class="hover:text-white">Sobre nosotros</a></li>
+        <li><a routerLink="/equipo" class="hover:text-white">Equipo</a></li>
+        <li><a routerLink="/contacto" class="hover:text-white">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-sm font-semibold text-white">Recursos</h4>
+      <ul class="mt-3 space-y-2 text-sm">
+        <li><a routerLink="/faq" class="hover:text-white">Preguntas frecuentes</a></li>
+        <li><a routerLink="/soporte" class="hover:text-white">Soporte</a></li>
+        <li><a routerLink="/blog" class="hover:text-white">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-sm font-semibold text-white">Contacto</h4>
+      <ul class="mt-3 space-y-2 text-sm">
+        <li><span class="text-gray-400">Lima, Perú</span></li>
+        <li><a href="tel:+5112345678" class="hover:text-white">+51 1 234 5678</a></li>
+        <li><a href="mailto:hola@miplataforma.com" class="hover:text-white">hola@miplataforma.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-4 text-xs text-gray-500 flex flex-col sm:flex-row justify-between">
+      <p>© {{ year }} Mi Plataforma — Todos los derechos reservados.</p>
+      <div class="flex gap-4 mt-2 sm:mt-0">
+        <a routerLink="/privacidad" class="hover:text-gray-300">Privacidad</a>
+        <a routerLink="/terminos" class="hover:text-gray-300">Términos</a>
+      </div>
+    </div>
+  </div>
+</footer>
