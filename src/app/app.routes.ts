@@ -1,11 +1,5 @@
 import { Routes } from '@angular/router';
-import { Home } from './pages/website/home/home';
-import { DashboardAdmin } from './pages/plataforma/dashboard-admin/dashboard-admin';
 import { authGuard } from './auth-guard';
-import { DashboardTeacher } from './pages/plataforma/dashboard-teacher/dashboard-teacher';
-import { DashboardEstudent } from './pages/plataforma/dashboard-estudent/dashboard-estudent';
-
-
 
 export const routes: Routes = [
   {

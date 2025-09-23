@@ -1,4 +1,10 @@
 import { Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { DashboardEstudent } from './dashboard-estudent/dashboard-estudent';
+import { DashboardAdmin } from './dashboard-admin/dashboard-admin';
+import { DashboardTeacher } from './dashboard-teacher/dashboard-teacher';
+
 
 export const PlataformaRoutes: Routes = [
   {
@@ -31,12 +37,6 @@ export const PlataformaRoutes: Routes = [
     }
   }
 ];
-
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { DashboardEstudent } from './dashboard-estudent/dashboard-estudent';
-import { DashboardAdmin } from './dashboard-admin/dashboard-admin';
-import { DashboardTeacher } from './dashboard-teacher/dashboard-teacher';
 
 @NgModule({
   imports: [RouterModule.forChild(PlataformaRoutes)],

@@ -1,4 +1,7 @@
 import { Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { Home } from './home/home';
 
 export const PlataformaRoutes: Routes = [
   {
@@ -8,16 +11,11 @@ export const PlataformaRoutes: Routes = [
       {
         path: '',
         pathMatch:'full',
-        loadComponent:() =>
-          import('./home/home').then((m) => m.Home),
+        redirectTo: 'home',
       }
     ]
   },
 ];
-
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { Home } from './home/home';
 
 @NgModule({
   imports: [RouterModule.forChild(PlataformaRoutes)],
