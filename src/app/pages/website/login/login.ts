@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   imports: [],
+  standalone: true,
   templateUrl: './login.html',
   styleUrl: './login.css'
 })

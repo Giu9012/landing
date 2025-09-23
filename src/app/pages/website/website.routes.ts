@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Home } from './home/home';
 
-export const PlataformaRoutes: Routes = [
+export const websiteRoutes: Routes = [
   {
     path: '',
     component: Home,
@@ -13,13 +13,12 @@ export const PlataformaRoutes: Routes = [
         pathMatch:'full',
         redirectTo: 'home',
       },
-      { path: 'login', loadComponent: () => import('./login/login').then(m => m.Login) },
     ]
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(PlataformaRoutes)],
+  imports: [RouterModule.forChild(websiteRoutes)],
   exports: [RouterModule]
 })
 export class WebsiteRoutesModule {}
