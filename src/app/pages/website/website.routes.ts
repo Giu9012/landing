@@ -12,7 +12,8 @@ export const PlataformaRoutes: Routes = [
         path: '',
         pathMatch:'full',
         redirectTo: 'home',
-      }
+      },
+      { path: 'login', loadComponent: () => import('./login/login').then(m => m.Login) },
     ]
   },
 ];
