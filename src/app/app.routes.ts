@@ -8,7 +8,7 @@ export const routes: Routes = [
     loadChildren: () => import('./pages/website/website.routes').then(m => m.WebsiteRoutesModule),
   },
   {
-    path: 'login',
+    path: 'auth/login',
     loadComponent: () => import('./pages/website/login/login').then(m => m.Login),
   },
   {
@@ -26,9 +26,9 @@ export const routes: Routes = [
   // },
   // {
   //   path: 'dashboard',
-  //   // canActivate: [authGuard], // Descomentado si quieres protegerlo
+  //   // canActivate: [authGuard],
   //   loadChildren: () => import('./pages/plataforma/plataforma.routes').then(m => m.PlataformaRoutesModule),
-  //   // data: { title: 'Dashboard', roles: ['administrador'] }, // Descomentado si aplicas roles
+  //   // data: { title: 'Dashboard', roles: ['administrador'] },
   // },
   // {
   //   path: '**',
