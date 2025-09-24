@@ -1,0 +1,47 @@
+<div class="sidebar" [class.sidebar-collapsed]="isSidebarCollapsed">
+  <div class="sidebar-header">
+    @if (isSidebarCollapsed) {
+      <a href="#" class="sidebar-logo">C</a>
+    } @else {
+      <a href="#" class="sidebar-logo">CodeWithChintan</a>
+    }
+  </div>
+  
+  <div class="sidebar-menu">
+    <ul>
+      @for (item of menuItems; track item) {
+        <li class="sidebar-menu-item">
+          <a
+            class="sidebar-item"
+            [class.has-children]="item.children"
+            [class.menu-item-active]="item.isOpen"
+            (click)="toggleMenuItem(item)"
+          >
+            <i [class]="item.icon"></i>
+            <span class="sidebar-item-text">{{ item.label }}</span>
+            
+            @if (item.children && !isSidebarCollapsed) {
+              <i
+                class="fas fa-chevron-down sidebar-item-arrow"
+                [class.rotated]="item.isOpen"
+              ></i>
+            }
+          </a>
+
+          @if (item.children && !isSidebarCollapsed && item.isOpen) {
+            <ul class="sidebar-submenu">
+              @for (child of item.children; track child) {
+                <li>
+                  <a class="sidebar-item sidebar-subitem">
+                    <i [class]="child.icon"></i>
+                    <span class="sidebar-item-text">{{ child.label }}</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+</div>
