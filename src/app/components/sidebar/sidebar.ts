@@ -1,48 +1,43 @@
-import { Component, Output, Input, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css'
 })
 export class Sidebar {
-  @Input() isSidebarCollapsed = false;
-  @Output() sidebarToggle = new EventEmitter<void>();
+  logo = {
+    small: 'assets/logo-colegio.png',
+    full: 'assets/logo-Negro.png',
+  };
 
-  menuItems: MenuItem[] = [
-    {
-      icon: 'fas fa-home',
-      label: 'Dashboard',
-      isOpen: false,
-      children: [
-        { icon: 'fas fa-chart-pie', label: 'Analytics' },
-        { icon: 'fas fa-tasks', label: 'Projects' },
-      ]
-    },
-    {
-      icon: 'fas fa-cog',
-      label: 'Settings',
-      isOpen: false,
-      children: [
-        { icon: 'fas fa-user', label: 'Profile' },
-        { icon: 'fas fa-lock', label: 'Security' },
-      ]
-    },
-    {
-      icon: 'fas fa-envelope',
-      label: 'Messages'
-    }
+  menuItems: SidebarItem[] = [
+    { icon: 'pi pi-home', label: 'Dashboard', route: '/dashboard' },
+    { icon: 'pi pi-calendar', label: 'Calendar', route: '/calendar' },
+    { icon: 'pi pi-envelope', label: 'Messages', route: '/messages' },
+    { icon: 'pi pi-cog', label: 'Settings', route: '/settings' },
   ];
 
-  toggleSidebar() {
-    this.sidebarToggle.emit();
+  user = {
+    avatar: 'assets/nosotros.jpg',
+    title: 'Jesus Maria',
+    info: 'Cuenta Free',
+  };
+
+  userMenu: UserMenuItem[] = [
+    { icon: 'pi pi-user', label: 'Perfil', route: '/profile' },
+    { icon: 'pi pi-sign-out', label: 'Logout', route: '/logout' },
+  ];
+
+  userMenuOpen = false;
+
+  toggleUserMenu() {
+    this.userMenuOpen = !this.userMenuOpen;
   }
 
-  toggleMenuItem(item: MenuItem) {
-    if (!this.isSidebarCollapsed && item.children) {
-      item.isOpen = !item.isOpen;
-    }
+  closeUserMenu() {
+    this.userMenuOpen = false;
   }
-
 }

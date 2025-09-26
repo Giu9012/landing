@@ -1,47 +1,64 @@
-<div class="sidebar" [class.sidebar-collapsed]="isSidebarCollapsed">
-  <div class="sidebar-header">
-    @if (isSidebarCollapsed) {
-      <a href="#" class="sidebar-logo">C</a>
-    } @else {
-      <a href="#" class="sidebar-logo">Plataforma</a>
-    }
-  </div>
-  
-  <div class="sidebar-menu">
-    <ul>
-      @for (item of menuItems; track item) {
-        <li class="sidebar-menu-item">
-          <a
-            class="sidebar-item"
-            [class.has-children]="item.children"
-            [class.menu-item-active]="item.isOpen"
-            (click)="toggleMenuItem(item)"
-          >
-            <i [class]="item.icon"></i>
-            <span class="sidebar-item-text">{{ item.label }}</span>
-            
-            @if (item.children && !isSidebarCollapsed) {
-              <i
-                class="fas fa-chevron-down sidebar-item-arrow"
-                [class.rotated]="item.isOpen"
-              ></i>
-            }
-          </a>
+<aside
+  class="group flex flex-col bg-white rounded-lg p-6 w-max h-screen"
+  (mouseleave)="closeUserMenu()"
+>
+  <ul class="flex flex-col gap-2 flex-1">
+    <li
+      class="grid grid-cols-[40px,0fr] items-center px-5 py-3 rounded transition-all duration-300 group-hover:grid-cols-[40px,1fr]"
+    >
+      <img [src]="logo.small" class="w-8" />
+      <div class="overflow-hidden pl-5">
+        <img [src]="logo.full" class="w-20" />
+      </div>
+    </li>
 
-          @if (item.children && !isSidebarCollapsed && item.isOpen) {
-            <ul class="sidebar-submenu">
-              @for (child of item.children; track child) {
-                <li>
-                  <a class="sidebar-item sidebar-subitem">
-                    <i [class]="child.icon"></i>
-                    <span class="sidebar-item-text">{{ child.label }}</span>
-                  </a>
-                </li>
-              }
-            </ul>
+    @for (item of menuItems; track item.label) {
+      <li
+        class="grid grid-cols-[4px,0fr] items-center px-7 py-3 rounded text-[#526581] fill-[#8491a5] transition-all duration-300 group-hover:grid-cols-[40px,1fr] hover:bg-[#007AFF] hover:text-white hover:fill-white cursor-pointer"
+        [routerLink]="item.route"
+        routerLinkActive="!bg-[#007AFF] !text-white !fill-white"
+      >
+        <i [class]="item.icon + ' text-lg'"></i>
+        <div class="overflow-hidden pl-5">
+          <p>{{ item.label }}</p>
+        </div>
+      </li>
+    }
+
+    <li
+      class="mt-auto relative grid grid-cols-[40px,0fr] items-center px-5 py-3 rounded transition-all duration-300 group-hover:grid-cols-[40px,1fr] cursor-pointer hover:bg-gray-100"
+      (click)="toggleUserMenu()"
+    >
+      <img
+        [src]="user.avatar"
+        class="w-10 h-10 object-cover object-top rounded-full"
+      />
+      <div class="overflow-hidden pl-5 text-nowrap text-left">
+        <h3 class="font-medium text-gray-500">{{ user.title }}</h3>
+        <p class="text-sm text-gray-500">{{ user.info }}</p>
+      </div>
+
+      <div
+        class="absolute bottom-full left-0 mb-2 w-40 bg-white border rounded shadow-lg overflow-hidden transition-all duration-300 origin-bottom"
+        [class.opacity-100]="userMenuOpen"
+        [class.opacity-0]="!userMenuOpen"
+        [class.translate-y-0]="userMenuOpen"
+        [class.translate-y-2]="!userMenuOpen"
+        [class.pointer-events-none]="!userMenuOpen"
+      >
+        <ul>
+          @for (opt of userMenu; track opt.label) {
+            <li
+              class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center gap-2"
+              [routerLink]="opt.route"
+              (click)="closeUserMenu()"
+            >
+              <i [class]="opt.icon + ' text-gray-600'"></i>
+              <span class="text-gray-500">{{ opt.label }}</span>
+            </li>
           }
-        </li>
-      }
-    </ul>
-  </div>
-</div>
+        </ul>
+      </div>
+    </li>
+  </ul>
+</aside>

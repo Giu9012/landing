@@ -15,10 +15,10 @@ export const routes: Routes = [
     path: 'plataforma',
     canActivate: [authGuard],
     loadChildren: () => import('./pages/plataforma/plataforma.routes').then(m => m.PlataformaRoutesModule),
-    data: {
-      title: 'Plataforma',
-      roles: ['administrador', 'docente', 'niño']
-    },
+    // data: {
+    //   title: 'Plataforma',
+    //   roles: ['administrador', 'docente', 'niño']
+    // },
   },
   // {
   //   path: 'oauth-redirect',

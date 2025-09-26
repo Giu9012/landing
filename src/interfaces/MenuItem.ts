@@ -1,6 +1,11 @@
-interface MenuItem {
+interface UserMenuItem {
   icon: string;
   label: string;
-  children?: MenuItem[];
-  isOpen?: boolean;
+  route?: string;
+}
+
+interface SidebarItem {
+  icon: string;
+  label: string;
+  route?: string;
 }

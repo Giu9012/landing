@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { Sidebar } from '../../../components/sidebar/sidebar';
 import { RouterOutlet } from '@angular/router';
-import { Side } from '../../../components/side/side';
+import { Sidebar } from '../../../components/sidebar/sidebar';
+
 
 @Component({
   selector: 'app-layout-platform',
-  imports: [ RouterOutlet, Side],
+  imports: [RouterOutlet, Sidebar],
   templateUrl: './layout-platform.html',
   styleUrl: './layout-platform.css'
 })
