@@ -7,17 +7,17 @@
   <div class="grid gap-6 md:grid-cols-3 mb-6">
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="font-semibold text-gray-700">Cursos</h3>
-      <p class="text-3xl font-bold mt-2">{{ courses.length }}</p>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.totalCourses }}</p>
     </div>
 
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="font-semibold text-gray-700">Tareas pendientes</h3>
-      <p class="text-3xl font-bold mt-2">{{ assignments.length }}</p>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.totalAssignments }}</p>
     </div>
 
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="font-semibold text-gray-700">Anuncios</h3>
-      <p class="text-3xl font-bold mt-2">{{ announcements.length }}</p>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.totalAnnouncements }}</p>
     </div>
   </div>
 
@@ -26,7 +26,7 @@
     <section class="bg-white rounded-lg shadow p-4">
       <h3 class="font-semibold text-gray-700 mb-3">Tus cursos</h3>
       <ul class="space-y-3">
-        @for (c of courses; track c.id; let i = $index) {
+        @for (c of Data.courses; track c.id; let i = $index) {
         <li class="flex items-center justify-between">
           <div>
             <div class="font-medium">{{ c.title }}</div>
@@ -49,7 +49,7 @@
       <div>
         <h3 class="font-semibold text-gray-700 mb-2">Anuncios</h3>
         <ul class="space-y-2">
-          @for (a of announcements; track a.id; let i = $index) {
+          @for (a of Data.announcements; track a.id; let i = $index) {
           <li class="text-sm">
             <div class="font-medium">{{ a.title }}</div>
             <div class="text-xs text-gray-500">Publicado: {{ a.date }}</div>
@@ -62,7 +62,7 @@
       <div>
         <h3 class="font-semibold text-gray-700 mb-2">Próximas tareas</h3>
         <ul class="space-y-2">
-          @for (task of assignments; track task.id; let i = $index) {
+          @for (task of Data.assignments; track task.id; let i = $index) {
           <li class="text-sm">
             <div class="font-medium">{{ task.title }} <span class="text-gray-500 text-xs">— {{ task.course }}</span></div>
             <div class="text-xs text-red-600">Entrega: {{ task.due }}</div>

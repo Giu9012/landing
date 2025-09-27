@@ -13,15 +13,17 @@
     </li>
 
     @for (item of menuItems; track item.label) {
-      <li
-        class="grid grid-cols-[4px,0fr] items-center px-7 py-3 rounded text-[#526581] fill-[#8491a5] transition-all duration-300 group-hover:grid-cols-[40px,1fr] hover:bg-[#007AFF] hover:text-white hover:fill-white cursor-pointer"
-        [routerLink]="item.route"
-        routerLinkActive="!bg-[#007AFF] !text-white !fill-white"
-      >
-        <i [class]="item.icon + ' text-lg'"></i>
-        <div class="overflow-hidden pl-5">
-          <p>{{ item.label }}</p>
-        </div>
+      <li class="cursor-pointer">
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="!bg-[#007AFF] !text-white !fill-white"
+          class="grid grid-cols-[4px,0fr] items-center px-7 py-3 rounded text-[#526581] fill-[#8491a5] transition-all duration-300 group-hover:grid-cols-[40px,1fr] hover:bg-[#007AFF] hover:text-white hover:fill-white flex items-center"
+        >
+          <i [class]="item.icon + ' text-lg'"></i>
+          <div class="overflow-hidden pl-5">
+            <p>{{ item.label }}</p>
+          </div>
+        </a>
       </li>
     }
 

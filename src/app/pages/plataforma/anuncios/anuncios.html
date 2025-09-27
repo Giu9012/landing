@@ -1,0 +1,64 @@
+<!-- Anuncios - estilo Blackboard -->
+<div class="p-6">
+  <header class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold">Anuncios</h2>
+    <div class="text-sm text-gray-600">Últimas noticias y comunicados</div>
+  </header>
+
+  <div class="grid gap-6 md:grid-cols-3 mb-6">
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700">Últimos</h3>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.totalAnnouncements }}</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700">Importantes</h3>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.importantAnnouncements }}</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700">Archivados</h3>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.archivedAnnouncements }}</p>
+    </div>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <section class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700 mb-3">Anuncios recientes</h3>
+      <ul class="space-y-3">
+        @for (a of Data.announcements; track a.id; let i = $index) {
+          <li class="border-b pb-3 last:border-b-0">
+            <div class="flex justify-between items-start gap-4">
+              <div>
+                <div class="font-medium text-gray-800">{{ a.title }}</div>
+                <div class="text-sm text-gray-500">{{ a.message || '' }}</div>
+              </div>
+              <div class="text-xs text-gray-400 text-right">
+                <div>{{ a.date }}</div>
+                <div class="mt-2">
+                  <button class="px-2 py-0.5 text-xs rounded bg-blue-600 text-white">Ver</button>
+                </div>
+              </div>
+            </div>
+          </li>
+        } @empty {
+          <li class="text-sm text-gray-500">No hay anuncios recientes.</li>
+        }
+      </ul>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700 mb-3">Filtros y acciones</h3>
+      <div class="flex flex-col gap-3">
+        <button class="px-4 py-2 rounded bg-blue-600 text-white">Crear anuncio</button>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" class="form-checkbox" /> Mostrar solo importantes
+        </label>
+        <label class="flex items-center gap-2 text-sm">
+          <input type="checkbox" class="form-checkbox" /> Ocultar archivados
+        </label>
+        <p class="text-xs text-gray-500 mt-2">Los anuncios pueden incluir fechas, archivos y enlaces a actividades.</p>
+      </div>
+    </section>
+  </div>
+</div>

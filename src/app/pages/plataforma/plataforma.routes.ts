@@ -17,6 +17,14 @@ export const PlataformaRoutes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./dashboard/dashboard').then(m => m.Dashboard),
       },
+      {
+        path: 'cursos',
+        loadComponent: () => import('./cursos/cursos').then(m => m.Cursos),
+      },
+      {
+        path: 'anuncios',
+        loadComponent: () => import('./anuncios/anuncios').then(m => m.Anuncios),
+      },
 
       // other children can be added here (courses, announcements, etc.)
     ]

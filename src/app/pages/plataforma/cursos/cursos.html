@@ -1,0 +1,55 @@
+<div class="p-6">
+  <header class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold">Mis cursos</h2>
+    <div class="text-sm text-gray-600">Resumen de progreso y actividades</div>
+  </header>
+
+  <div class="grid gap-6 md:grid-cols-3 mb-6">
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700">Total de cursos</h3>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.totalCourses }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700">En progreso</h3>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.inProgressCourses }}</p>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold text-gray-700">Completados</h3>
+      <p class="text-3xl font-bold mt-2 text-gray-800">{{ Data.completedCourses }}</p>
+    </div>
+  </div>
+
+  <section class="bg-white rounded-lg shadow p-4">
+    <h3 class="font-semibold text-gray-700 mb-4">Lista de cursos</h3>
+
+    <ul class="space-y-4">
+      @for (course of Data.courses; track course.id; let i = $index) {
+        <li class="flex items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-blue-100 rounded flex items-center justify-center text-xl font-bold text-blue-700">
+              {{ (course.title || '').charAt(0) }}
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">{{ course.title }}</div>
+              <div class="text-sm text-gray-500">Profesor: {{ course.teacher || '—' }}</div>
+              <div class="text-xs text-gray-400">ID: {{ course.id }}</div>
+            </div>
+          </div>
+
+          <div class="w-48">
+            <div class="text-sm text-right text-gray-600 mb-1">{{ course.progress || 0 }}%</div>
+            <div class="bg-gray-200 h-2 rounded overflow-hidden">
+              <div class="bg-green-600 h-2 rounded" [style.width.%]="course.progress || 0"></div>
+            </div>
+            <div class="mt-3 flex gap-2 justify-end">
+              <button class="px-3 py-1 rounded bg-blue-600 text-white text-sm hover:bg-blue-700">Abrir</button>
+              <button class="px-3 py-1 rounded border text-sm" aria-label="Ir al curso">Detalles</button>
+            </div>
+          </div>
+        </li>
+      } @empty {
+        <li class="text-sm text-gray-500">No estás inscrito en ningún curso.</li>
+      }
+    </ul>
+  </section>
+</div>

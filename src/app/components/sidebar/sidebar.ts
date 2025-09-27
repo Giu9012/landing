@@ -14,10 +14,10 @@ export class Sidebar {
   };
 
   menuItems: SidebarItem[] = [
-    { icon: 'pi pi-home', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'pi pi-calendar', label: 'Calendar', route: '/calendar' },
-    { icon: 'pi pi-envelope', label: 'Messages', route: '/messages' },
-    { icon: 'pi pi-cog', label: 'Settings', route: '/settings' },
+    { icon: 'pi pi-home', label: 'Dashboard', route: 'dashboard' },
+    { icon: 'pi pi-book', label: 'Cursos', route: 'cursos' },
+    { icon: 'pi pi-megaphone', label: 'Anuncios', route: 'anuncios' },
+    { icon: 'pi pi-cog', label: 'Settings', route: 'settings' },
   ];
 
   user = {
@@ -27,8 +27,8 @@ export class Sidebar {
   };
 
   userMenu: UserMenuItem[] = [
-    { icon: 'pi pi-user', label: 'Perfil', route: '/profile' },
-    { icon: 'pi pi-sign-out', label: 'Logout', route: '/logout' },
+    { icon: 'pi pi-user', label: 'Perfil', route: 'profile' },
+    { icon: 'pi pi-sign-out', label: 'Logout', route: 'logout' },
   ];
 
   userMenuOpen = false;
