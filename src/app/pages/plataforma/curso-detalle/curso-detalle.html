@@ -1,0 +1,80 @@
+<div class="p-6">
+  <a routerLink="/plataforma/cursos" class="text-blue-600 mb-4 inline-block">← Volver a mis cursos</a>
+
+  <header class="mb-6">
+    <h1 class="text-2xl font-bold">{{ course?.title }}</h1>
+    <div class="text-sm text-gray-600">
+      Profesor: {{ course?.teacher || '—' }} • Progreso: {{ course?.progress || 0 }}%
+    </div>
+  </header>
+
+  <div class="grid gap-6 md:grid-cols-3 mb-6">
+    <section class="bg-white rounded-lg shadow p-4 col-span-2">
+      <h2 class="font-semibold mb-3">Módulos y contenidos</h2>
+      <ul class="space-y-3">
+        @for (m of modules; track m.id; let i = $index) {
+          <li class="border rounded p-3 flex justify-between items-center">
+            <div>
+              <div class="font-medium">{{ m.title }}</div>
+              <div class="text-sm text-gray-500">{{ m.description }}</div>
+            </div>
+            <div>
+              <button class="px-3 py-1 rounded bg-blue-600 text-white text-sm">Abrir</button>
+            </div>
+          </li>
+        } @empty {
+          <li class="text-sm text-gray-500">No hay módulos definidos.</li>
+        }
+      </ul>
+    </section>
+
+    <aside class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold mb-2">Acciones</h3>
+      <div class="flex flex-col gap-2">
+        <button class="px-4 py-2 rounded bg-green-600 text-white">Continuar curso</button>
+        <button class="px-4 py-2 rounded border">Materiales</button>
+        <a routerLink="/plataforma/cursos" class="px-4 py-2 rounded text-center border">Volver</a>
+      </div>
+    </aside>
+  </div>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    <section class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold mb-2">Tareas relacionadas</h3>
+      <ul class="space-y-2">
+        @for (t of assignments; track t.id; let i = $index) {
+          <li class="flex justify-between items-center">
+            <div>
+              <div class="font-medium">{{ t.title }}</div>
+              <div class="text-xs text-gray-500">Entrega: {{ t.due }}</div>
+            </div>
+            <button class="px-3 py-1 rounded bg-blue-600 text-white text-sm">Ver</button>
+          </li>
+        } @empty {
+          <li class="text-sm text-gray-500">No hay tareas para este curso.</li>
+        }
+      </ul>
+    </section>
+
+    <section class="bg-white rounded-lg shadow p-4">
+      <h3 class="font-semibold mb-2">Anuncios del curso</h3>
+      <ul class="space-y-2">
+        @for (a of announcements; track a.id; let i = $index) {
+          <li class="flex justify-between items-start">
+            <div>
+              <div class="font-medium">{{ a.title }}</div>
+              <div class="text-xs text-gray-500">{{ a.date }}</div>
+              <div class="text-sm text-gray-600 mt-1">{{ a.message }}</div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <button (click)="markImportant(a.id)" class="px-2 py-1 text-xs rounded bg-yellow-400">Marcar</button>
+              <button (click)="toggleArchive(a.id)" class="px-2 py-1 text-xs rounded border">Archivar</button>
+            </div>
+          </li>
+        } @empty {
+          <li class="text-sm text-gray-500">No hay anuncios para este curso.</li>
+        }
+      </ul>
+    </section>
+  </div>
+</div>

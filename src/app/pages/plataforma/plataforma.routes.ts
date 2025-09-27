@@ -22,6 +22,11 @@ export const PlataformaRoutes: Routes = [
         loadComponent: () => import('./cursos/cursos').then(m => m.Cursos),
       },
       {
+        path: 'cursos/:id',
+        loadComponent: () => import('./curso-detalle/curso-detalle')
+          .then(m => m.CursoDetalle),
+      },
+      {
         path: 'anuncios',
         loadComponent: () => import('./anuncios/anuncios').then(m => m.Anuncios),
       },

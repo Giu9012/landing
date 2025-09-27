@@ -58,5 +58,10 @@ export class Data {
     if (item) item.archived = !item.archived;
   }
 
+  getCourseById(id: number) {
+    const course = this.courses.find(c => c.id === id);
+    return (course); // Replace `of` with HttpClient call to your backend
+  }
+
 }
 
