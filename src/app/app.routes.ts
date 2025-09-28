@@ -24,12 +24,12 @@ export const routes: Routes = [
   //   path: 'oauth-redirect',
   //   loadComponent: () => import('./pages/oauth-redirect/oauth-redirect.component').then(m => m.OauthRedirectComponent),
   // },
-  // {
-  //   path: 'dashboard',
-  //   // canActivate: [authGuard],
-  //   loadChildren: () => import('./pages/plataforma/plataforma.routes').then(m => m.PlataformaRoutesModule),
-  //   // data: { title: 'Dashboard', roles: ['administrador'] },
-  // },
+  {
+    path: 'administrador',
+    // canActivate: [authGuard],
+    loadChildren: () => import('./pages/admin/admin.routes').then(m => m.AdminRoutesModule),
+    // data: { title: 'administrador', roles: ['administrador'] },
+  },
   // {
   //   path: '**',
   //   loadComponent: () => import('./pages/not-found/not-found.component').then(m => m.NotFoundComponent),

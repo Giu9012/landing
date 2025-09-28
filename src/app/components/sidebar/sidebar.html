@@ -2,7 +2,7 @@
   class="group flex flex-col bg-white rounded-lg p-6 w-max h-screen"
   (mouseleave)="closeUserMenu()"
 >
-  <ul class="flex flex-col gap-2 flex-1">
+  <ul class="flex flex-col gap-4 flex-1">
     <li
       class="grid grid-cols-[40px,0fr] items-center px-5 py-3 rounded transition-all duration-300 group-hover:grid-cols-[40px,1fr]"
     >
@@ -13,11 +13,13 @@
     </li>
 
     @for (item of menuItems; track item.label) {
-      <li class="cursor-pointer">
+      <li
+        class="cursor-pointer"
+      >
         <a
           [routerLink]="item.route"
           routerLinkActive="!bg-[#007AFF] !text-white !fill-white"
-          class="grid grid-cols-[4px,0fr] items-center px-7 py-3 rounded text-[#526581] fill-[#8491a5] transition-all duration-300 group-hover:grid-cols-[40px,1fr] hover:bg-[#007AFF] hover:text-white hover:fill-white flex items-center"
+          class="grid grid-cols-[40px,0fr] items-center px-7 py-3 rounded text-[#526581] fill-[#8491a5] transition-all duration-300 group-hover:grid-cols-[40px,1fr] hover:bg-[#007AFF] hover:text-white hover:fill-white"
         >
           <i [class]="item.icon + ' text-lg'"></i>
           <div class="overflow-hidden pl-5">
