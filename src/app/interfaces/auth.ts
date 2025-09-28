@@ -4,3 +4,10 @@ export interface LoginResponse{
   role: string;
   id: number;
 }
+
+export interface JwtPayload {
+  id: string;
+  role: 'estudiante' | 'docente' | 'administrador';
+  iat: number;
+  exp: number;
+}

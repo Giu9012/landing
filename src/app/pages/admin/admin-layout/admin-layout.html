@@ -1,0 +1,8 @@
+<app-sidebar class="w-auto h-auto"
+  [menuItems]="adminMenuItems"
+  [userMenu]="adminUserMenu"
+  [logo]="adminLogo"
+  [user]="(user$ | async)!"
+  [theme]="'dark'"
+></app-sidebar>
+<router-outlet></router-outlet>

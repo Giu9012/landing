@@ -9,3 +9,9 @@ interface SidebarItem {
   label: string;
   route?: string;
 }
+
+interface SidebarUser {
+  avatar: string;
+  title: string;
+  info: string;
+}
