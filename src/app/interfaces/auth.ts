@@ -11,3 +11,7 @@ export interface JwtPayload {
   iat: number;
   exp: number;
 }
+
+export interface SignedUrlCache {
+  [key: string]: { url: string; exp: number };
+}

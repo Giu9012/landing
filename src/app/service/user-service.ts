@@ -1,33 +1,95 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, forkJoin, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, forkJoin, interval, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../environments/environments';
-import { JwtPayload, LoginResponse } from '../interfaces/auth';
+import { JwtPayload, LoginResponse, SignedUrlCache } from '../interfaces/auth';
 import { User } from '../interfaces/user';
 import { Profile } from '../interfaces/profile';
 
-@Injectable({
+@Injectable( {
   providedIn: 'root'
-})
+} )
 export class UserService {
   private apiUrl = environment.API_URL;
   private defaultProfilePicture = 'Multimedia/Imagenes/Usuarios/Perfiles/defaultProfile.webp';
+  private signedUrlCache: SignedUrlCache = {};
+  private urlCacheSubject = new BehaviorSubject<SignedUrlCache>( {} );
+  private readonly REVALIDATION_INTERVAL = 10 * 60 * 1000; // 10 minutes
+  private readonly PRELOAD_KEYS = [this.defaultProfilePicture];
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject( PLATFORM_ID ) private platformId: Object
   ) {
-    console.log('UserService instantiated, isBrowser:', isPlatformBrowser(this.platformId));
+    if ( isPlatformBrowser( this.platformId ) ) {
+      console.log( 'Browser: Initializing UserService' );
+      this.loadSignedUrlCache();
+      this.preloadSignedUrls();
+      this.startUrlRevalidation();
+    }
+  }
+
+  private loadSignedUrlCache(): void {
+    const cache = localStorage.getItem('signedUrlCache');
+    if (cache) {
+      const parsedCache: SignedUrlCache = JSON.parse(cache);
+      const now = Math.floor(Date.now() / 1000);
+      this.signedUrlCache = Object.fromEntries(
+        Object.entries(parsedCache).filter(([_, entry]) => entry.exp > now)
+      );
+      this.saveSignedUrlCache();
+      console.log('Browser: Loaded and cleaned signed URL cache', this.signedUrlCache);
+    }
+  }
+
+  private saveSignedUrlCache(): void {
+    localStorage.setItem('signedUrlCache', JSON.stringify(this.signedUrlCache));
+    this.urlCacheSubject.next(this.signedUrlCache);
+    console.log('Browser: Saved signed URL cache', this.signedUrlCache);
+  }
+
+  private preloadSignedUrls(): void {
+    console.log('Browser: Preloading signed URLs for keys', this.PRELOAD_KEYS);
+    this.refreshSignedUrls(this.PRELOAD_KEYS).subscribe();
+  }
+
+  private startUrlRevalidation(): void {
+    interval(this.REVALIDATION_INTERVAL).subscribe(() => {
+      console.log('Browser: Revalidating signed URLs');
+      const now = Math.floor(Date.now() / 1000);
+      const expiredKeys = Object.keys(this.signedUrlCache).filter(
+        key => this.signedUrlCache[key].exp < now + 60 // 60s buffer
+      );
+      if (expiredKeys.length > 0) {
+        console.log('Browser: Found expired URLs, refreshing', expiredKeys);
+        this.refreshSignedUrls(expiredKeys).subscribe();
+      }
+    });
+  }
+
+  getSignedUrlObservable(key: string): Observable<string> {
+    if (!isPlatformBrowser(this.platformId)) {
+      console.log('SSR: Returning placeholder for key', key);
+      return of('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlByb2ZpbGU8L3RleHQ+PC9zdmc+');
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    if (this.signedUrlCache[key] && this.signedUrlCache[key].exp > now + 60) {
+      console.log('Browser: Using cached signed URL for key', key);
+      return of(this.signedUrlCache[key].url);
+    }
+
+    return this.getSignedUrl(key);
   }
 
   getCurrentUser(): Observable<SidebarUser> {
     if (!isPlatformBrowser(this.platformId)) {
       console.log('SSR: Returning default user due to server-side execution');
-      return this.getSignedUrl(this.defaultProfilePicture).pipe(
+      return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
         map(signedUrl => ({
           avatar: signedUrl,
           title: 'Invitado',
@@ -42,7 +104,7 @@ export class UserService {
     if (!accessToken) {
       console.log('Browser: No accessToken found, redirecting to login');
       this.logout();
-      return this.getSignedUrl(this.defaultProfilePicture).pipe(
+      return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
         map(signedUrl => ({
           avatar: signedUrl,
           title: 'Invitado',
@@ -51,31 +113,44 @@ export class UserService {
       );
     }
 
+    // Decode JWT
     let payload: JwtPayload;
     try {
       payload = JSON.parse(atob(accessToken.split('.')[1]));
       console.log('Browser: Decoded JWT', { id: payload.id, role: payload.role });
     } catch (error) {
       console.error('Browser: Failed to decode accessToken', error);
-      this.logout();
-      return this.getSignedUrl(this.defaultProfilePicture).pipe(
-        map(signedUrl => ({
-          avatar: signedUrl,
-          title: 'Invitado',
-          info: 'Desconocido'
-        }))
+      return this.refreshAccessToken().pipe(
+        switchMap(newAccessToken => this.fetchUserData(newAccessToken, null!, null!)),
+        catchError(() => {
+          console.log('Browser: Token refresh failed, redirecting to login');
+          this.logout();
+          return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
+            map(signedUrl => ({
+              avatar: signedUrl,
+              title: 'Invitado',
+              info: 'Desconocido'
+            }))
+          );
+        })
       );
     }
 
     if (!payload.id || !payload.role) {
-      console.log('Browser: Invalid JWT payload, redirecting to login');
-      this.logout();
-      return this.getSignedUrl(this.defaultProfilePicture).pipe(
-        map(signedUrl => ({
-          avatar: signedUrl,
-          title: 'Invitado',
-          info: 'Desconocido'
-        }))
+      console.log('Browser: Invalid JWT payload, attempting to refresh');
+      return this.refreshAccessToken().pipe(
+        switchMap(newAccessToken => this.fetchUserData(newAccessToken, null!, null!)),
+        catchError(() => {
+          console.log('Browser: Token refresh failed, redirecting to login');
+          this.logout();
+          return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
+            map(signedUrl => ({
+              avatar: signedUrl,
+              title: 'Invitado',
+              info: 'Desconocido'
+            }))
+          );
+        })
       );
     }
 
@@ -87,7 +162,7 @@ export class UserService {
         catchError(() => {
           console.log('Browser: Token refresh failed, redirecting to login');
           this.logout();
-          return this.getSignedUrl(this.defaultProfilePicture).pipe(
+          return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
             map(signedUrl => ({
               avatar: signedUrl,
               title: 'Invitado',
@@ -131,7 +206,7 @@ export class UserService {
       switchMap(([user, profile]) => {
         console.log('Browser: Mapping user and profile data', { user, profile });
         const profilePicture = profile.profilePicture || this.defaultProfilePicture;
-        return this.getSignedUrl(profilePicture).pipe(
+        return this.getSignedUrlObservable(profilePicture).pipe(
           map(signedUrl => ({
             avatar: signedUrl,
             title: user.name || `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || 'Usuario',
@@ -144,11 +219,30 @@ export class UserService {
         if (error.status === 401) {
           console.log('Browser: 401 error, attempting to refresh token');
           return this.refreshAccessToken().pipe(
-            switchMap(newAccessToken => this.fetchUserData(newAccessToken, userId, role)),
+            switchMap(newAccessToken => {
+              try {
+                const newPayload = JSON.parse(atob(newAccessToken.split('.')[1]));
+                console.log('Browser: Decoded new JWT', { id: newPayload.id, role: newPayload.role });
+                if (!newPayload.id || !newPayload.role) {
+                  throw new Error('Invalid new JWT payload');
+                }
+                return this.fetchUserData(newAccessToken, newPayload.id, newPayload.role);
+              } catch (err) {
+                console.error('Browser: Failed to decode new accessToken', err);
+                this.logout();
+                return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
+                  map(signedUrl => ({
+                    avatar: signedUrl,
+                    title: 'Invitado',
+                    info: 'Desconocido'
+                  }))
+                );
+              }
+            }),
             catchError(() => {
               console.log('Browser: Token refresh failed after 401, redirecting to login');
               this.logout();
-              return this.getSignedUrl(this.defaultProfilePicture).pipe(
+              return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
                 map(signedUrl => ({
                   avatar: signedUrl,
                   title: 'Invitado',
@@ -158,7 +252,7 @@ export class UserService {
             })
           );
         }
-        return this.getSignedUrl(this.defaultProfilePicture).pipe(
+        return this.getSignedUrlObservable(this.defaultProfilePicture).pipe(
           map(signedUrl => ({
             avatar: signedUrl,
             title: 'Invitado',
@@ -169,36 +263,79 @@ export class UserService {
     );
   }
 
-  getSignedUrl(key: string): Observable<string> {
-    if (!isPlatformBrowser(this.platformId)) {
-      console.log('SSR: Skipping signed URL generation, returning placeholder');
-      return of('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlByb2ZpbGU8L3RleHQ+PC9zdmc+');
+  private getSignedUrl(key: string): Observable<string> {
+    const now = Math.floor(Date.now() / 1000);
+    if (this.signedUrlCache[key] && this.signedUrlCache[key].exp > now + 60) {
+      console.log('Browser: Using cached signed URL for key', key);
+      return of(this.signedUrlCache[key].url);
     }
-    return this.http.post<{ signedUrl: string }>(`${this.apiUrl}/upload/private/get-signed-url`, { key }, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('accessToken') || ''}` }
-    }).pipe(
-      map(response => {
-        console.log('Browser: Signed URL received', response.signedUrl);
-        return response.signedUrl;
+
+    return this.fetchSignedUrl(key).pipe(
+      tap(({ signedUrl, expiresIn }) => {
+        this.signedUrlCache[key] = {
+          url: signedUrl,
+          exp: Math.floor(Date.now() / 1000) + expiresIn
+        };
+        this.saveSignedUrlCache();
       }),
+      map(({ signedUrl }) => signedUrl)
+    );
+  }
+
+  private fetchSignedUrl(key: string): Observable<{ signedUrl: string; expiresIn: number }> {
+    console.log('Browser: Fetching signed URL for key', key);
+    const accessToken = localStorage.getItem('accessToken') || '';
+    return this.http.post<{ signedUrl: string }>(`${this.apiUrl}/upload/private/get-signed-url`, { key }, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    }).pipe(
+      map(response => ({
+        signedUrl: response.signedUrl,
+        expiresIn: 3600 // 1 hour, as per backend
+      })),
       catchError((error: HttpErrorResponse) => {
         console.error('Browser: Failed to get signed URL', error);
-        if (error.status === 401) {
+        if (error.status === 401 || error.status === 403) {
+          console.log('Browser: 401/403 error, attempting to refresh token');
           return this.refreshAccessToken().pipe(
-            switchMap(newAccessToken => this.http.post<{ signedUrl: string }>(`${this.apiUrl}/private/get-signed-url`, { key }, {
+            switchMap(newAccessToken => this.http.post<{ signedUrl: string }>(`${this.apiUrl}/upload/private/get-signed-url`, { key }, {
               headers: { Authorization: `Bearer ${newAccessToken}` }
             }).pipe(
-              map(response => response.signedUrl)
+              map(response => ({
+                signedUrl: response.signedUrl,
+                expiresIn: 3600
+              }))
             )),
             catchError(() => {
               console.log('Browser: Token refresh failed for signed URL, redirecting to login');
               this.logout();
-              return of('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlByb2ZpbGU8L3RleHQ+PC9zdmc+');
+              return of({
+                signedUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlByb2ZpbGU8L3RleHQ+PC9zdmc+',
+                expiresIn: 0
+              })
             })
           );
         }
-        return of('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlByb2ZpbGU8L3RleHQ+PC9zdmc+');
+        return of({
+          signedUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjY2NjIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2NjYiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPlByb2ZpbGU8L3RleHQ+PC9zdmc+',
+          expiresIn: 0
+        });
       })
+    );
+  }
+
+  private refreshSignedUrls(keys: string[]): Observable<void> {
+    return forkJoin(keys.map(key => this.fetchSignedUrl(key))).pipe(
+      tap(results => {
+        results.forEach(({ signedUrl, expiresIn }, index) => {
+          const key = keys[index];
+          this.signedUrlCache[key] = {
+            url: signedUrl,
+            exp: Math.floor(Date.now() / 1000) + expiresIn
+          };
+        });
+        this.saveSignedUrlCache();
+      }),
+      map(() => undefined)
     );
   }
 
@@ -215,6 +352,9 @@ export class UserService {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('role');
+      localStorage.removeItem('signedUrlCache');
+      this.signedUrlCache = {};
+      this.urlCacheSubject.next({});
       this.router.navigate(['/login']);
     }
   }

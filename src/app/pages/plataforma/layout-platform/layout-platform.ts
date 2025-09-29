@@ -40,12 +40,7 @@ export class LayoutPlatform implements OnInit{
   ) {}
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      console.log('Browser: Initializing user$ in LayoutPlatformComponent');
-      this.user$ = this.userService.getCurrentUser();
-    } else {
-      console.log('SSR: Setting default user$ for LayoutPlatformComponent');
-      this.user$ = this.userService.getCurrentUser();
-    }
+    console.log('Initializing user$ in LayoutPlatformComponent, isBrowser:', isPlatformBrowser(this.platformId));
+    this.user$ = this.userService.getCurrentUser();
   }
 }

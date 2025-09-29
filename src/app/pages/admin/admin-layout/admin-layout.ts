@@ -38,12 +38,7 @@ export class AdminLayout implements OnInit{
   ) {}
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      console.log('Browser: Initializing user$ in AdminLayoutComponent');
-      this.user$ = this.userService.getCurrentUser();
-    } else {
-      console.log('SSR: Setting default user$ for AdminLayoutComponent');
-      this.user$ = this.userService.getCurrentUser();
-    }
+    console.log('Initializing user$ in AdminLayoutComponent, isBrowser:', isPlatformBrowser(this.platformId));
+    this.user$ = this.userService.getCurrentUser();
   }
 }
